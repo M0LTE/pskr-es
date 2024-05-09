@@ -49,6 +49,7 @@ internal class PskrListener : IHostedService
             var obj = JsonNode.Parse(arg.ApplicationMessage.ConvertPayloadToString());
             var senderEntity = obj!["sa"]?.GetValue<int>();
             var receiverEntity = obj!["ra"]?.GetValue<int>();
+            var rpt = obj!["rp"]?.GetValue<int>();
 
             if (senderEntity != null && receiverEntity != null && senderEntity != receiverEntity)
             {
@@ -63,7 +64,7 @@ internal class PskrListener : IHostedService
                         if (!recent.Any() || recent.All(r => r.Item1.Elapsed > TimeSpan.FromMinutes(15)))
                         {
                             var ts = new DateTime(1970, 1, 1).AddSeconds(obj!["t"]!.GetValue<long>());
-                            Console.WriteLine($"{ts:HH:mm:ss}Z {receiverCountry} hearing {senderCountry}");
+                            Console.WriteLine($"{ts:HH:mm:ss}Z {receiverCountry} hearing {senderCountry} ({rpt})");
                             pairs.RemoveAll(a => (a.Item2 == senderEntity && a.Item3 == receiverEntity)
                                 || (a.Item2 == receiverEntity && a.Item3 == senderEntity));
                             pairs.Add(Tuple.Create(Stopwatch.StartNew(), senderEntity.Value, receiverEntity.Value));
